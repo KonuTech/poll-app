@@ -1,3 +1,7 @@
+-- noinspection SpellCheckingInspectionForFile
+
+-- noinspection SqlNoDataSourceInspectionForFile
+
 -- Table: poll.polls
 
 -- DROP TABLE IF EXISTS poll.polls;
