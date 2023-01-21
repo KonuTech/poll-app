@@ -1,2 +1,2 @@
-!/.env
-!/scripts/sql/test_remote.sql
+.env
+./scripts/sql/test_remote.sql
