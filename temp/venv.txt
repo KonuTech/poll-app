@@ -9,3 +9,48 @@ pip        22.3.1
 setuptools 65.6.3
 wheel      0.38.4
 (venv) PS C:\Users\KonuTech\PycharmProjects\poll-app>
+
+
+
+(venv) PS C:\Users\KonuTech\PycharmProjects\poll-app> git filter-branch --index-filter "git rm -rf --cached --ignore-unmatch .env" HEAD
+WARNING: git-filter-branch has a glut of gotchas generating mangled history
+         rewrites.  Hit Ctrl-C before proceeding to abort, then use an
+         alternative filtering tool such as 'git filter-repo'
+         (https://github.com/newren/git-filter-repo/) instead.  See the
+         filter-branch manual page for more details; to squelch this warning,
+         set FILTER_BRANCH_SQUELCH_WARNING=1.
+Proceeding with filter-branch...
+
+Rewrite b7ca413d8a6b99b9c71ba21f9ff50cb5383bb900 (8/16) (3 seconds passed, remaining 3 predicted)    rm '.env'
+Rewrite 5dd1690ae55e2fb73c27422375c1a1bc73c830c5 (8/16) (3 seconds passed, remaining 3 predicted)    rm '.env'
+Rewrite c1ee14f4ed340e7cd55ed35bac85c8f9fbbac717 (8/16) (3 seconds passed, remaining 3 predicted)    rm '.env'
+Rewrite 45354cb46190b662a1cc4c6ecb931f185e981612 (11/16) (4 seconds passed, remaining 1 predicted)    rm '.env'
+Rewrite 45c0308f1ed0df82b3605140bf6ad1f2fe2c8a62 (11/16) (4 seconds passed, remaining 1 predicted)    rm '.env'
+Rewrite f9493d327267066e2e1d8f39116f980d8164455b (11/16) (4 seconds passed, remaining 1 predicted)    rm '.env'
+Rewrite 85551c8d00b9b8a4986016077e8b9b43b5defef6 (14/16) (5 seconds passed, remaining 0 predicted)    rm '.env'
+Rewrite 92fdc710881615d8f1f236e89f83e64f6bfc4a3e (14/16) (5 seconds passed, remaining 0 predicted)
+Ref 'refs/heads/main' was rewritten
+(venv) PS C:\Users\KonuTech\PycharmProjects\poll-app> git filter-branch --index-filter "git rm -rf --cached --ignore-unmatch ./scrips/sql/test_remote.s
+ql" HEAD
+WARNING: git-filter-branch has a glut of gotchas generating mangled history
+         rewrites.  Hit Ctrl-C before proceeding to abort, then use an
+         alternative filtering tool such as 'git filter-repo'
+         (https://github.com/newren/git-filter-repo/) instead.  See the
+         filter-branch manual page for more details; to squelch this warning,
+         set FILTER_BRANCH_SQUELCH_WARNING=1.
+Proceeding with filter-branch...
+
+Cannot create a new backup.
+A previous backup already exists in refs/original/
+Force overwriting the backup with -f
+(venv) PS C:\Users\KonuTech\PycharmProjects\poll-app> git push --force
+Enumerating objects: 70, done.
+Counting objects: 100% (70/70), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (56/56), done.
+Writing objects: 100% (70/70), 7.33 KiB | 751.00 KiB/s, done.
+Total 70 (delta 19), reused 2 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (19/19), done.
+To https://github.com/KonuTech/poll-app.git
+ + 92fdc71...dc1cfc3 main -> main (forced update)
+
