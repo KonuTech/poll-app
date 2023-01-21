@@ -1,3 +1,5 @@
+-- noinspection SpellCheckingInspectionForFile
+
 -- noinspection SqlNoDataSourceInspectionForFile
 
 -- Table: poll.votes
