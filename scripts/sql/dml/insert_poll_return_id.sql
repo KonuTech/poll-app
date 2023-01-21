@@ -2,7 +2,7 @@
 
 -- noinspection SqlNoDataSourceInspectionForFile
 
-INSERT INTO poll.options (
-	 option_text
-	,poll_id
-) VALUES %s;
+INSERT INTO poll.polls (
+     title
+    ,owner_username
+) VALUES (%s, %s) RETURNING id;

@@ -29,7 +29,7 @@ def prompt_create_poll(conn):
     poll_owner = input("Enter poll owner: ")
     options = []
 
-    while new_option := input(NEW_OPTION_PROMPT):
+    while (new_option := input(NEW_OPTION_PROMPT)):
         options.append(new_option)
 
     database.create_poll(conn, poll_title, poll_owner, options)
@@ -64,10 +64,10 @@ def show_poll_votes(conn):
         # This gives us count and percentage of votes for each option in a poll
         poll_and_votes = database.get_poll_and_vote_results(conn, poll_id)
     except DivisionByZero:
-        print("No votes yet cas for this poll.")
+        print("No votes yet cast for this poll.")
     else:
-        for _id, option_text, count, percentage in poll_and_votes:
-            print(f"{option_text} got {count} votes ({percentage:.2f}% of total)")
+        for result in poll_and_votes:
+            print(f"{result[1]} got {result[2]} votes ({result[3]:.2f}% of total)")
 
 
 def randomize_poll_winner(connection):
@@ -93,7 +93,7 @@ def menu():
     database_uri = input(DATABASE_PROMPT)
     if not database_uri:
         load_dotenv()
-        database_uri = os.environ["DATABASE_PROMPT"]
+        database_uri = os.environ["DATABASE_URI"]
 
     conn = psycopg2.connect(database_uri)
     database.create_tables(conn)
