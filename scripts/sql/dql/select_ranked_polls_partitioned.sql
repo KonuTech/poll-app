@@ -6,7 +6,9 @@ SELECT
      p.title
     ,o.option_text
     ,COUNT(v.username) AS vote_count
-    ,RANK() OVER(ORDER BY COUNT(v.username) DESC) AS ranking
+    ,RANK() OVER(PARTITION BY p.title ORDER BY COUNT(v.username)  DESC) AS rank
+    ,DENSE_RANK() OVER(PARTITION BY title ORDER BY COUNT(v.username)  DESC) AS dense_rank
+    ,ROW_NUMBER() OVER(PARTITION BY p.title ORDER BY COUNT(v.username)  DESC) AS row
 FROM poll.polls AS p
 LEFT JOIN poll.options AS o
 ON p.id = o.poll_id

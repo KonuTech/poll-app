@@ -1,9 +1,12 @@
 #!/usr/bin/python
 import os
+from typing import List
+
 import psycopg2
 from psycopg2.errors import DivisionByZero
 from dotenv import load_dotenv
 import database
+
 
 DATABASE_PROMPT = """
     Enter a DATABASE_URI value or leave empty to load from .env file: 
@@ -30,7 +33,7 @@ def prompt_create_poll(conn):
     poll_owner = input("Enter poll owner: ")
     options = []
 
-    while (new_option := input(NEW_OPTION_PROMPT)):
+    while new_option := input(NEW_OPTION_PROMPT):
         options.append(new_option)
 
     database.create_poll(conn, poll_title, poll_owner, options)
@@ -43,7 +46,7 @@ def list_open_polls(conn):
         print(f"{_id}: {title} (create by: {owner})")
 
 
-def _print_poll_options(poll_with_options):
+def print_poll_options(poll_with_options: List[database.PollWithOption]):
     for option in poll_with_options:
         print(f"{option[3]}: {option[4]}")
 
@@ -52,7 +55,7 @@ def prompt_vote_poll(conn):
     poll_id = int(input("Enter poll would you like to vote on: "))
 
     poll_options = database.get_poll_details(conn, poll_id)
-    _print_poll_options(poll_options)
+    print_poll_options(poll_options)
 
     option_id = int(input("Enter option you'd like to vote for: "))
     username = input("Enter username you'd like to vote as: ")
@@ -74,7 +77,7 @@ def show_poll_votes(conn):
 def randomize_poll_winner(connection):
     poll_id = int(input("Enter poll you'd like to pick a winner for: "))
     poll_options = database.get_poll_details(connection, poll_id)
-    _print_poll_options(poll_options)
+    print_poll_options(poll_options)
 
     option_id = int(input("Enter which is the winning option, we'll pick a random winner from voters: "))
     winner = database.get_random_poll_vote(connection, option_id)
@@ -106,4 +109,5 @@ def menu():
             print("Invalid input selected.Please try again.")
 
 
-menu()
+if __name__ == '__main__':
+    menu()

@@ -5,7 +5,7 @@
 SELECT
     *
 FROM
-    votes
+    poll.votes
 WHERE
     option_id = %s
 ORDER BY
