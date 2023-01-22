@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-CREATE_POLLS = open("./scripts/sql/ddl/create_table_polls.sql", 'r').read()
-CREATE_OPTIONS = open("./scripts/sql/ddl/create_table_options.sql", 'r').read()
-CREATE_VOTES = open("./scripts/sql/ddl/create_table_votes.sql", 'r').read()
+# CREATE_POLLS = open("./scripts/sql/ddl/create_table_polls.sql", 'r').read()
+# CREATE_OPTIONS = open("./scripts/sql/ddl/create_table_options.sql", 'r').read()
+# CREATE_VOTES = open("./scripts/sql/ddl/create_table_votes.sql", 'r').read()
 SELECT_POLL_ALL = open("./scripts/sql/dql/select_poll_all.sql", 'r').read()
 SELECT_POLL_LATEST = open("./scripts/sql/dql/select_poll_latest.sql", 'r').read()
 SELECT_POLL_WITH_OPTIONS = open("./scripts/sql/dql/select_poll_with_options.sql", 'r').read()
