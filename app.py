@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import psycopg2
 from psycopg2.errors import DivisionByZero
