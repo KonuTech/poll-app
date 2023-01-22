@@ -12,14 +12,14 @@ def drop_tables():
     conn = psycopg2.connect(os.environ["DATABASE_URI"])
     try:
         with conn:
-            with conn.cursor() as curs:
-                curs.execute('CALL poll.drop_tables()')
+            with conn.cursor() as cur:
+                cur.execute('CALL poll.drop_tables()')
 
                 # commit the transaction
                 conn.commit()
 
                 # close the cursor
-                curs.close()
+                cur.close()
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -33,14 +33,14 @@ def create_tables():
     conn = psycopg2.connect(os.environ["DATABASE_URI"])
     try:
         with conn:
-            with conn.cursor() as curs:
-                curs.execute('CALL poll.create_tables()')
+            with conn.cursor() as cur:
+                cur.execute('CALL poll.create_tables()')
 
                 # commit the transaction
                 conn.commit()
 
                 # close the cursor
-                curs.close()
+                cur.close()
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -54,14 +54,14 @@ def populate_tables():
     conn = psycopg2.connect(os.environ["DATABASE_URI"])
     try:
         with conn:
-            with conn.cursor() as curs:
-                curs.execute('CALL poll.populate_tables()')
+            with conn.cursor() as cur:
+                cur.execute('CALL poll.populate_tables()')
 
                 # commit the transaction
                 conn.commit()
 
                 # close the cursor
-                curs.close()
+                cur.close()
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)

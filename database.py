@@ -25,69 +25,60 @@ conn = psycopg2.connect(os.environ["DATABASE_URI"])
 
 def create_tables(conn):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(CREATE_POLLS)
-            curs.execute(CREATE_OPTIONS)
-            curs.execute(CREATE_VOTES)
+        with conn.cursor() as cur:
+            cur.execute('CALL poll.create_tables()')
 
 
 def create_poll(conn, title, owner, options):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(INSERT_POLL_RETURN_ID, (title, owner))
-            # curs.execute("""
-            #     SELECT id FROM poll.polls ORDER BY id DESC LIMIT 1;
-            # """)
-
-            poll_id = curs.fetchone()[0]
+        with conn.cursor() as cur:
+            cur.execute(INSERT_POLL_RETURN_ID, (title, owner))
+            poll_id = cur.fetchone()[0]
             option_values = [(option_text, poll_id) for option_text in options]
-
-            execute_values(curs, INSERT_OPTION, option_values)
-            # for option_value in option_values:
-            #     curs.execute(INSERT_OPTION, option_value)
+            execute_values(cur, INSERT_OPTION, option_values)
 
 
 def get_polls(conn):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(SELECT_POLL_ALL)
+        with conn.cursor() as cur:
+            cur.execute(SELECT_POLL_ALL)
 
-            return curs.fetchall()
+            return cur.fetchall()
 
 
 def get_latest_polls(conn):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(SELECT_POLL_LATEST)
+        with conn.cursor() as cur:
+            cur.execute(SELECT_POLL_LATEST)
 
-            return curs.fetchall()
+            return cur.fetchall()
 
 
 def get_poll_details(conn, poll_id):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(SELECT_POLL_WITH_OPTIONS, (poll_id,))
+        with conn.cursor() as cur:
+            cur.execute(SELECT_POLL_WITH_OPTIONS, (poll_id,))
 
-            return curs.fetchall()
+            return cur.fetchall()
 
 
 def get_poll_and_vote_results(conn, poll_id):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(SELECT_POLL_VOTE_DETAILS, (poll_id,))
+        with conn.cursor() as cur:
+            cur.execute(SELECT_POLL_VOTE_DETAILS, (poll_id,))
 
-            return curs.fetchall()
+            return cur.fetchall()
 
 
 def get_random_poll_vote(conn, option_id):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(SELECT_RANDOM_VOTE, (option_id,))
+        with conn.cursor() as cur:
+            cur.execute(SELECT_RANDOM_VOTE, (option_id,))
 
-            return curs.fetchone()
+            return cur.fetchone()
 
 
 def add_poll_vote(conn, username, option_id):
     with conn:
-        with conn.cursor() as curs:
-            curs.execute(INSERT_VOTE, (username, option_id))
+        with conn.cursor() as cur:
+            cur.execute(INSERT_VOTE, (username, option_id))
