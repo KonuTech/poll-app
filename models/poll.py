@@ -1,4 +1,5 @@
 from typing import List
+from connection_pool import get_connection
 from models.option import Option
 import database
 
@@ -13,37 +14,33 @@ class Poll:
         return f"Poll({self.name!r}, {self.id!r})"  # Poll('title', 'owner', 1)
 
     def save(self):
-        conn = create_connection()
-        new_poll_id = database.create_poll(conn, self.title, self.owner)
-        conn.cloe()
-        self.id = new_poll_id
+        with get_connection() as conn:
+            new_poll_id = database.create_poll(conn, self.title, self.owner)
+            self.id = new_poll_id
 
     def add_option(self, option_text: str):
         Option(option_text, self.id).save()
 
-    def option(self) -> List[Option]:
-        conn = create_connection()
-        options = database.get_poll_options(conn, self.id)
-        conn.close()
-        return [Option(option[1], option[2], option[0]) for option in options]
+    @property
+    def options(self) -> List[Option]:
+        with get_connection() as conn:
+            options = database.get_poll_options(conn, self.id)
+            return [Option(option[1], option[2], option[0]) for option in options]
 
     @classmethod
     def get(cls, poll_id: int) -> "Poll":
-        conn = create_connection()
-        poll = database.get_poll(conn, poll_id)
-        conn.close()
-        return cls(poll[1], poll[2], poll[0])
+        with get_connection() as conn:
+            poll = database.get_poll(conn, poll_id)
+            return cls(poll[1], poll[2], poll[0])
 
     @classmethod
     def all(cls) -> List["Poll"]:
-        conn = create_connection()
-        polls = database.get_polls(conn)
-        conn.close()
-        return [cls(poll[1], poll[2], poll[0]) for poll in polls]
+        with get_connection() as conn:
+            polls = database.get_polls(conn)
+            return [cls(poll[1], poll[2], poll[0]) for poll in polls]
 
     @classmethod
     def latest(cls) -> "Poll":
-        conn = create_connection()
-        poll = database.get_latest_polls()
-        conn.close()
-        return cls(poll[1], poll[2], poll[0])
+        with get_connection() as conn:
+            poll = database.get_latest_poll(conn)
+            return cls(poll[1], poll[2], poll[0])

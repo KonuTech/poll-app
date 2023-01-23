@@ -1,6 +1,6 @@
 SELECT
     *
-FROM votes
+FROM poll.votes
 WHERE
     option_id = %s
 ;

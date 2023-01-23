@@ -1,12 +1,11 @@
 #!/usr/bin/python
-import os
 from typing import List
+import random
 
-import psycopg2
-from psycopg2.errors import DivisionByZero
-from dotenv import load_dotenv
 import database
-
+from models.poll import Poll
+from models.option import Option
+from connection_pool import get_connection
 
 DATABASE_PROMPT = """
     Enter a DATABASE_URI value or leave empty to load from .env file: 
@@ -28,59 +27,58 @@ NEW_OPTION_PROMPT = """
 """
 
 
-def prompt_create_poll(conn):
+def prompt_create_poll():
     poll_title = input("Enter poll title: ")
     poll_owner = input("Enter poll owner: ")
-    options = []
+    poll = Poll(poll_title, poll_owner)
+    poll.save()
 
     while new_option := input(NEW_OPTION_PROMPT):
-        options.append(new_option)
-
-    database.create_poll(conn, poll_title, poll_owner, options)
+        poll.add_option(new_option)
 
 
-def list_open_polls(conn):
-    polls = database.get_polls(conn)
-
-    for _id, title, owner in polls:
-        print(f"{_id}: {title} (create by: {owner})")
+def list_open_polls():
+    for poll in Poll.all():
+        print(f"{poll.id}: {poll.title} (create by: {poll.owner})")
 
 
-def print_poll_options(poll_with_options: List[database.PollWithOption]):
-    for option in poll_with_options:
-        print(f"{option[3]}: {option[4]}")
+def print_poll_options(options: List[Option]):
+    for option in options:
+        print(f"{option.id}: {option.text}")
 
 
-def prompt_vote_poll(conn):
+def prompt_vote_poll():
     poll_id = int(input("Enter poll would you like to vote on: "))
-
-    poll_options = database.get_poll_details(conn, poll_id)
-    print_poll_options(poll_options)
+    print_poll_options(Poll.get(poll_id).options)
 
     option_id = int(input("Enter option you'd like to vote for: "))
     username = input("Enter username you'd like to vote as: ")
-    database.add_poll_vote(conn, username, option_id)
+    Option.get(option_id).vote(username)  # two methods on one db
 
 
-def show_poll_votes(conn):
+def show_poll_votes():
     poll_id = int(input("Enter poll you would like to see votes for: "))
+    poll = Poll.get(poll_id)
+    options = poll.options
+    votes_per_option = [len(option.votes) for option in options]
+    total_votes = sum(votes_per_option)
+
     try:
-        # This gives us count and percentage of votes for each option in a poll
-        poll_and_votes = database.get_poll_and_vote_results(conn, poll_id)
-    except DivisionByZero:
-        print("No votes yet cast for this poll.")
-    else:
-        for result in poll_and_votes:
-            print(f"{result[1]} got {result[2]} votes ({result[3]:.2f}% of total)")
+        for option, votes in zip(options, votes_per_option):
+            percentage = votes / total_votes * 100
+            print(f"{option.text} got {votes} votes ({percentage:.2f}% of total)")
+    except ZeroDivisionError:
+        print("No votes cast for this poll yet.")
 
 
-def randomize_poll_winner(connection):
+def randomize_poll_winner():
     poll_id = int(input("Enter poll you'd like to pick a winner for: "))
-    poll_options = database.get_poll_details(connection, poll_id)
-    print_poll_options(poll_options)
+    poll = Poll.get(poll_id)
+    print_poll_options(poll.options)
 
     option_id = int(input("Enter which is the winning option, we'll pick a random winner from voters: "))
-    winner = database.get_random_poll_vote(connection, option_id)
+    votes = Option.get(option_id).votes
+    winner = random.choice(votes)
     print(f"The randomly selected winner is {winner[0]}.")
 
 
@@ -94,17 +92,12 @@ MENU_OPTIONS = {
 
 
 def menu():
-    database_uri = input(DATABASE_PROMPT)
-    if not database_uri:
-        load_dotenv()
-        database_uri = os.environ["DATABASE_URI"]
-
-    conn = psycopg2.connect(database_uri)
-    database.create_tables(conn)
+    with get_connection() as conn:
+        database.create_tables(conn)
 
     while (selection := input(MENU_PROMPT)) != "6":
         try:
-            MENU_OPTIONS[selection](conn)
+            MENU_OPTIONS[selection]()
         except KeyError:
             print("Invalid input selected.Please try again.")
 
