@@ -2,11 +2,8 @@
 
 -- noinspection SqlNoDataSourceInspectionForFile
 
-SELECT
-    *
-FROM poll.polls AS p
-INNER JOIN poll.options AS o
-ON p.id=o.poll_id
-WHERE
-    p.id=%s
+INSERT INTO poll.options (
+	 option_text
+	,poll_id
+) VALUES (%s, %s) RETURNING id
 ;

@@ -8,22 +8,25 @@ load_dotenv()
 
 
 Poll = Tuple[int, str, str]
+Option = Tuple[int, str, str]
 Vote = Tuple[str, int]
 PollWithOption = Tuple[int, str, str, int, str, int]
-PollResults = tuple[int, str, int, float]
+# PollResults = tuple[int, str, int, float]
 
 
 # TODO: for below create views and query the views
 SELECT_POLL = open("./scripts/sql/dql/select_poll.sql", 'r').read()
+SELECT_OPTION = open("./scripts/sql/dql/select_option.sql", 'r').read()
 SELECT_POLL_ALL = open("./scripts/sql/dql/select_poll_all.sql", 'r').read()
 SELECT_POLL_LATEST = open("./scripts/sql/dql/select_poll_latest.sql", 'r').read()
-SELECT_POLL_WITH_OPTIONS = open("./scripts/sql/dql/select_poll_with_options.sql", 'r').read()
-SELECT_POLL_VOTE_DETAILS = open("./scripts/sql/dql/select_poll_vote_details.sql", 'r').read()
-SELECT_RANDOM_VOTE = open("./scripts/sql/dql/select_vote_random.sql", 'r').read()
+SELECT_POLL_OPTIONS = open("./scripts/sql/dql/select_poll_options.sql", 'r').read()
+# SELECT_POLL_VOTE_DETAILS = open("./scripts/sql/dql/select_poll_vote_details.sql", 'r').read()
+# SELECT_VOTE_RANDOM = open("./scripts/sql/dql/select_vote_random.sql", 'r').read()
+SELECT_VOTES_FOR_OPTION = open("./scripts/sql/dql/select_votes_for_option.sql", 'r').read()
 
 
 # TODO: for below create stored procedures
-INSERT_OPTION = open("./scripts/sql/dml/insert_option.sql", 'r').read()
+INSERT_OPTION_RETURN_ID = open("scripts/sql/dml/insert_option_return_id.sql", 'r').read()
 INSERT_VOTE = open("./scripts/sql/dml/insert_vote.sql", 'r').read()
 INSERT_POLL_RETURN_ID = open("./scripts/sql/dml/insert_poll_return_id.sql", 'r').read()
 
@@ -33,15 +36,13 @@ def create_tables(conn):
         with conn.cursor() as cur:
             cur.execute('CALL poll.create_tables()')
 
-# -- polls --
 
-def create_poll(conn, title, owner: str, options: List[str]) -> None:
+def create_poll(conn, title, owner: str) -> None:
     with conn:
         with conn.cursor() as cur:
             cur.execute(INSERT_POLL_RETURN_ID, (title, owner))
             poll_id = cur.fetchone()[0]
-            option_values = [(option_text, poll_id) for option_text in options]
-            execute_values(cur, INSERT_OPTION, option_values)
+            return poll_id
 
 
 def get_polls(conn) -> List[Poll]:
@@ -58,32 +59,41 @@ def get_poll(conn, poll_id: int) -> Poll:
             return cur.fetchone()
 
 
-def get_latest_polls(conn) -> List[PollWithOption]:
+def get_latest_poll(conn) -> Poll:
     with conn:
         with conn.cursor() as cur:
             cur.execute(SELECT_POLL_LATEST)
-            return cur.fetchall()
-
-
-def get_poll_details(conn, poll_id: int) -> List[PollWithOption]:
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute(SELECT_POLL_WITH_OPTIONS, (poll_id,))
-            return cur.fetchall()
-
-
-def get_poll_and_vote_results(conn, poll_id: int) -> List[PollResults]:
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute(SELECT_POLL_VOTE_DETAILS, (poll_id,))
-            return cur.fetchall()
-
-
-def get_random_poll_vote(conn, option_id: int) -> Vote:
-    with conn:
-        with conn.cursor() as cur:
-            cur.execute(SELECT_RANDOM_VOTE, (option_id,))
             return cur.fetchone()
+
+
+def get_poll_options(conn, poll_id: int) -> List[Option]:
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(SELECT_POLL_OPTIONS, (poll_id,))
+            return cur.fetchall()
+
+
+def get_option(conn, option_id: int) -> Option:
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(SELECT_OPTION, (option_id,))
+            return cur.fetchone()
+
+
+def add_option(conn, option_text: str, poll_id: int):
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(INSERT_OPTION_RETURN_ID, (option_text, poll_id))
+            option_id = cur.fetchone()[0]
+            return option_id
+
+# -- votes --
+
+def get_votes_for_option(conn, option_id: int) -> List[Vote]:
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(SELECT_VOTES_FOR_OPTION, (option_id,))
+            return cur.fetchall()
 
 
 def add_poll_vote(conn, username: str, option_id: int) -> None:

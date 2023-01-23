@@ -4,9 +4,7 @@
 
 SELECT
      *
-FROM poll.polls AS p
-INNER JOIN poll.options AS o
-ON p.id = o.poll_id
+FROM poll.polls
 WHERE
     o.poll_id = (
         SELECT
