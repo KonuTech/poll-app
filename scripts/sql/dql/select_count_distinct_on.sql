@@ -1,3 +1,7 @@
+-- noinspection SpellCheckingInspectionForFile
+
+-- noinspection SqlNoDataSourceInspectionForFile
+
 SELECT
      DISTINCT ON (o.poll_id) poll_id
     ,o.id

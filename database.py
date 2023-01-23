@@ -14,6 +14,7 @@ PollResults = tuple[int, str, int, float]
 
 
 # TODO: for below create views and query the views
+SELECT_POLL = open("./scripts/sql/dql/select_poll.sql", 'r').read()
 SELECT_POLL_ALL = open("./scripts/sql/dql/select_poll_all.sql", 'r').read()
 SELECT_POLL_LATEST = open("./scripts/sql/dql/select_poll_latest.sql", 'r').read()
 SELECT_POLL_WITH_OPTIONS = open("./scripts/sql/dql/select_poll_with_options.sql", 'r').read()
@@ -32,6 +33,7 @@ def create_tables(conn):
         with conn.cursor() as cur:
             cur.execute('CALL poll.create_tables()')
 
+# -- polls --
 
 def create_poll(conn, title, owner: str, options: List[str]) -> None:
     with conn:
@@ -47,6 +49,13 @@ def get_polls(conn) -> List[Poll]:
         with conn.cursor() as cur:
             cur.execute(SELECT_POLL_ALL)
             return cur.fetchall()
+
+
+def get_poll(conn, poll_id: int) -> Poll:
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute(SELECT_POLL, (poll_id,))
+            return cur.fetchone()
 
 
 def get_latest_polls(conn) -> List[PollWithOption]:
