@@ -5,4 +5,6 @@
 INSERT INTO poll.votes (
      username
     ,option_id
-) VALUES (%s, %s);
+    ,vote_timestamp
+) VALUES (%s, %s, %s)
+;

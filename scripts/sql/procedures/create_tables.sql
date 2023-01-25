@@ -50,6 +50,7 @@ AS $BODY$
             (
                 username text COLLATE pg_catalog."default",
                 option_id integer,
+                vote_timestamp integer,
                 CONSTRAINT votes_option_id_fkey FOREIGN KEY (option_id)
                     REFERENCES poll.options (id) MATCH SIMPLE
                     ON UPDATE NO ACTION

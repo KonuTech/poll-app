@@ -1,6 +1,9 @@
 #!/usr/bin/python
+import datetime
 from typing import List
 import random
+
+import pytz
 
 import database
 from models.poll import Poll
@@ -69,6 +72,21 @@ def show_poll_votes():
             print(f"{option.text} got {votes} votes ({percentage:.2f}% of total)")
     except ZeroDivisionError:
         print("No votes cast for this poll yet.")
+
+    vote_log = input("Would you like to see the vote log? (y/N) ")
+
+    if vote_log == "y":
+        _print_votes_for_options(options)
+
+
+def _print_votes_for_options(options: List[Option]):
+    for option in options:
+        print(f"-- {option.text} --")
+        for vote in option.votes:
+            naive_datetime = datetime.datetime.utcfromtimestamp(vote[2])
+            utc_date = pytz.utc.localize(naive_datetime)
+            local_date = utc_date.astimezone(pytz.timezone("Europe/London")).strftime("%Y-%m-%d %H:%M")
+            print(f"\t- {vote[0]} on {local_date}")
 
 
 def randomize_poll_winner():

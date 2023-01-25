@@ -13,6 +13,8 @@ PollWithOption = Tuple[int, str, str, int, str, int]
 # PollResults = tuple[int, str, int, float]
 
 
+CALL_CREATE_TABLES = open("./scripts/sql/procedures/create_tables.sql", 'r').read()
+
 # TODO: for below create views and query the views
 SELECT_POLL = open("./scripts/sql/dql/select_poll.sql", 'r').read()
 SELECT_OPTION = open("./scripts/sql/dql/select_option.sql", 'r').read()
@@ -38,7 +40,7 @@ def get_cursor(conn):
 
 def create_tables(conn):
     with get_cursor(conn) as cur:
-        cur.execute('CALL poll.create_tables()')
+        cur.execute(CALL_CREATE_TABLES)
 
 
 def create_poll(conn, title, owner: str) -> None:
@@ -91,6 +93,6 @@ def get_votes_for_option(conn, option_id: int) -> List[Vote]:
         return cur.fetchall()
 
 
-def add_poll_vote(conn, username: str, option_id: int) -> None:
+def add_poll_vote(conn, username: str, option_id: int, vote_timestamp: float) -> None:
     with get_cursor(conn) as cur:
-        cur.execute(INSERT_VOTE, (username, option_id))
+        cur.execute(INSERT_VOTE, (username, option_id, vote_timestamp))
